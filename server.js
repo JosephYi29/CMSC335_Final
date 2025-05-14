@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const moment = require("moment");
 const session = require("express-session");
+const fs = require("fs");
 const { faker } = require("@faker-js/faker");
 require("dotenv").config({
     path: path.resolve(__dirname, ".env"),
@@ -54,27 +55,56 @@ app.listen(portNumber, () => {
 });
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~ GAME SESSION OBJECT ~~~~~~~~~~~~~~~~~~~~~~~ */
+
 class GameSession {
     #attempts = 0;
     #totalScore = 0;
     #history = [];
     #time;
+    #names = [];
 
-    async makeGuess(name, age, userGuess) {
+    constructor(session = null) {
+        if (session) {
+            // object recreation between sessions
+            this.#attempts = session.attempts;
+            this.#totalScore = session.totalScore;
+            this.#history = session.history;
+            this.#time = session.time;
+            this.#names = session.names;
+        } else {
+            // TODO: grabbing from static text file, CHANGE to grab from mongoDB!!!
+            const validNameFile = path.resolve(__dirname, "static", "valid_names.txt");
+            const validNames = fs.readFileSync(validNameFile, "utf-8").split(/\r?\n/);
+
+            // grab 5 random non-repeating indices (current list of names is 477)
+            const indices = new Set();
+            while (indices.size < 5) {
+                indices.add(Math.floor(Math.random() * 477));
+            }
+
+            indices.forEach((i) => {
+                this.#names.push(validNames[i]);
+            });
+
+            // console.log(this.#names);
+        }
+    }
+
+    async makeGuess(userGuess) {
+        const resp = await fetch(`https://api.agify.io?name=${this.#names[this.#attempts]}`);
+        const data = await resp.json();
+
+        const age = data.age;
         const diff = Math.abs(age - userGuess);
-        // maxDiff = 25; maxScore = 5000;
+        // maxDiff = 50; maxScore = 5000;
         let score = 0;
-        if (diff < 25) {
-            score = Math.round(5000 * (1 - diff / 25));
+        if (diff < 50) {
+            score = Math.round(5000 * (1 - diff / 50));
         }
 
-        this.#history.push({ name, userGuess, age, score });
+        this.#history.push({ name: this.#names[this.#attempts], userGuess, correctAge: age, score });
         this.#totalScore += score;
         this.#attempts++;
-        console.log(this.#attempts);
-        console.log(name);
-        console.log(age);
-        console.log(score);
     }
 
     isOver() {
@@ -83,6 +113,10 @@ class GameSession {
 
     setTime() {
         this.#time = moment().format("MM/DD/YYYY HH:mm:ss");
+    }
+
+    getNextName() {
+        return this.#names[this.#attempts];
     }
 
     getNumberAttempts() {
@@ -103,30 +137,8 @@ class GameSession {
             totalScore: this.#totalScore,
             history: this.#history,
             time: this.#time,
+            names: this.#names,
         };
-    }
-
-    static fromJSON(data) {
-        const session = new GameSession();
-        session.#attempts = data.attempts;
-        session.#totalScore = data.totalScore;
-        session.#history = data.history;
-        session.#time = data.time;
-        return session;
-    }
-
-    static async getValidNameAndAge() {
-        let name = "";
-        let age = null;
-        do {
-            name = faker.person.firstName();
-            const resp = await fetch(`https://api.agify.io?name=${name}&country_id=US`);
-            const data = await resp.json();
-            age = data.age;
-        } while (age === null);
-
-        console.log({ name, age });
-        return { name, age };
     }
 }
 
@@ -139,36 +151,34 @@ app.get("/", (req, res) => {
 /* ~~~~~~~~~~~~~~~~~~~~~~~ PLAY ROUTES ~~~~~~~~~~~~~~~~~~~~~~~ */
 
 app.get("/play", (req, res) => {
+    delete req.session.game;
     req.session.game = new GameSession();
     res.redirect("/guess");
 });
 
 app.get("/guess", async (req, res) => {
-    const game = GameSession.fromJSON(req.session.game);
-    if (!game || game.isOver()) {
+    const game = new GameSession(req.session.game);
+    if (game.isOver()) {
         game.setTime();
         return res.redirect("/result");
     }
 
-    const { name, age } = await GameSession.getValidNameAndAge();
-    req.session.currentName = name;
-    req.session.age = age;
-
-    res.render("play", { name, attempts: game.getNumberAttempts() + 1, remaining: 5 - game.getNumberAttempts() });
+    res.render("guessing", {
+        name: game.getNextName(),
+        attempts: game.getNumberAttempts() + 1,
+        remaining: 5 - game.getNumberAttempts(),
+    });
 });
 
 app.post("/guess", async (req, res) => {
     const userGuess = req.body.age;
-    const game = GameSession.fromJSON(req.session.game);
-    if (!game || game.isOver()) {
-        game.setTime();
-        return res.redirect("/result");
-    }
+    const game = new GameSession(req.session.game);
 
-    await game.makeGuess(req.session.currentName, req.session.age, userGuess);
+    await game.makeGuess(userGuess);
     req.session.game = game.toJSON();
 
     if (game.isOver()) {
+        game.setTime();
         return res.redirect("/result");
     } else {
         return res.redirect("/guess");
@@ -176,8 +186,9 @@ app.post("/guess", async (req, res) => {
 });
 
 app.get("/result", (req, res) => {
-    const game = GameSession.fromJSON(req.session.game);
-    if (!game) {
+    const game = new GameSession(req.session.game);
+    console.log(game.getHistory());
+    if (!req.session.game || game.getHistory().length < 5) {
         return res.redirect("/");
     }
 
@@ -187,5 +198,10 @@ app.get("/result", (req, res) => {
 /* ~~~~~~~~~~~~~~~~~~~~~~~ LEADERBOARD PAGE ~~~~~~~~~~~~~~~~~~~~~~~ */
 
 app.get("/leaderboard", (req, res) => {
+    res.render("leaderboard");
+});
+
+app.post("/leaderboard", (req, res) => {
+    // TODO: handle new entry into MONGODB
     res.render("leaderboard");
 });

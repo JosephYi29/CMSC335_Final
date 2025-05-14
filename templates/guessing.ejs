@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>AgeGuesser Play</title>
+        <title>AgeGuesser Guessing</title>
     </head>
 
     <body>
@@ -13,10 +13,10 @@
         <h2>Guess the Age for: <%- name %></h2>
 
         <form action="/guess" method="post">
-            <input type="number" name="age" placeholder="Enter Your Guess" min="0" required />
+            <input type="number" name="age" placeholder="Enter Your Guess" min="0" required autofocus />
             <input type="submit" />
         </form>
 
-        <p>Remaining Attempts: <%- remaining %></p>
+        <!-- <p>Remaining Attempts: <%- remaining %></p> -->
     </body>
 </html>
