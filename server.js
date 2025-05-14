@@ -3,7 +3,6 @@ const path = require("path");
 const moment = require("moment");
 const session = require("express-session");
 const fs = require("fs");
-const { faker } = require("@faker-js/faker");
 require("dotenv").config({
     path: path.resolve(__dirname, ".env"),
 });
