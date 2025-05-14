@@ -1,0 +1,16 @@
+meta {
+  name: Basic Get
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://pokeapi.co/api/v2/pokemon/ditto
+  body: none
+  auth: inherit
+}
+
+headers {
+  ~Content-Encoding: gzip
+  ~Content-Type: application/json; charset=utf-8
+}
