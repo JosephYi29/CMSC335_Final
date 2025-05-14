@@ -9,6 +9,14 @@
         <%- include('common/header') %>
 
         <br /><br />
-        <h2>Play</h2>
+        <h1>Attempt <%- attempts %> / 5</h1>
+        <h2>Guess the Age for: <%- name %></h2>
+
+        <form action="/guess" method="post">
+            <input type="number" name="age" placeholder="Enter Your Guess" min="0" required />
+            <input type="submit" />
+        </form>
+
+        <p>Remaining Attempts: <%- remaining %></p>
     </body>
 </html>
