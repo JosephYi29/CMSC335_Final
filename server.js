@@ -3,6 +3,7 @@ const path = require("path");
 const moment = require("moment");
 const session = require("express-session");
 const { faker } = require("@faker-js/faker");
+
 require("dotenv").config({
     path: path.resolve(__dirname, ".env"),
 });
@@ -20,6 +21,7 @@ app.use(
 );
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "templates"));
+app.use(express.static(path.join(__dirname, 'static')));
 
 if (
     process.argv.length !== 3 ||

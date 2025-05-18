@@ -6,6 +6,10 @@
     </head>
 
     <body>
+        <style>
+            @import url(style.css);
+            @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+        </style>
         <%- include('common/header') %>
 
         <br /><br />
@@ -13,7 +17,7 @@
         <h2>Guess the Age for: <%- name %></h2>
 
         <form action="/guess" method="post">
-            <input type="number" name="age" placeholder="Enter Your Guess" min="0" required />
+            <input id="guess" type="number" name="age" placeholder="Enter Your Guess" min="0" required />
             <input type="submit" />
         </form>
 

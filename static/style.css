@@ -1,0 +1,83 @@
+html{
+    font-family: "Varela Round", serif;
+    background-color: black;
+}
+
+nav {
+    text-align: center;
+}
+
+#title {
+    color: rgb(138, 255, 255);
+    font-size: 2rem;
+}
+
+.button, button {
+    display: inline-block;
+    color: black;
+    background-color: rgb(138, 255, 255);;
+    font-size: 1rem;
+    padding: 1rem;
+    text-decoration: none;
+}
+
+a:hover, button:hover, input[type="submit"]:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+}
+
+h1{
+    color: rgb(138, 255, 255);
+    text-align: center;
+}
+
+#howToPlay, h3, table {
+    color: rgb(138, 255, 255);
+}
+
+p {
+    color: white;
+    text-align: center;
+    margin: auto 7rem;
+    margin-top: 2rem;
+}
+
+button {
+    margin-top: 1.5rem;
+    margin-left: 42.5rem;
+}
+
+h2 {
+    color: rgb(138, 255, 255);
+    text-align: center;
+}
+
+form {
+    text-align: center;
+}
+
+input[type="number"] {
+    font-size: 1.5rem;
+    font-family: "Varela Round", serif;
+}   
+
+input[type="submit"] {
+    font-size: 1.5rem;
+    background-color: rgb(138, 255, 255);
+    font-family: "Varela Round", serif;
+}
+
+h3, table {
+    text-align: center;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#playAgain {
+    margin-left: 41rem;
+    margin-top: 1.5rem;
+}

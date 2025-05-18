@@ -6,10 +6,14 @@
     </head>
 
     <body>
+        <style>
+            @import url(style.css);
+            @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+        </style>
         <%- include('common/header') %>
 
         <br /><br />
-        <h2>How to Play</h2>
+        <h2 id="howToPlay">How to Play</h2>
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam mattis nulla lectus, eget tincidunt ligula
             auctor ac. Nunc diam nisi, feugiat vel hendrerit ac, pellentesque ut lectus. Fusce nunc sem, aliquam ac
@@ -21,7 +25,7 @@
         </p>
 
         <a href="/play">
-            <button>Play</button>
+            <button id="play">Play</button>
         </a>
     </body>
 </html>
