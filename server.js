@@ -26,6 +26,7 @@ const NameDB = process.env.MONGO_NAMES;
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "templates"));
+app.use(express.static(path.join(__dirname, 'static')));
 
 if (
 	process.argv.length !== 3 ||
