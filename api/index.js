@@ -47,22 +47,22 @@ app.listen(portNumber, () => {
 		`Web server started and running at http://localhost:${portNumber}`
 	);
 
-	process.stdin.setEncoding("utf8");
-	process.stdout.write("Type 'stop' to shutdown the server: ");
-	process.stdin.on("readable", () => {
-		const dataInput = process.stdin.read();
-		if (dataInput !== null) {
-			const command = dataInput.trim().toLowerCase();
-			if (command === "stop") {
-				process.stdout.write("Shutting down the server\n");
-				process.exit(0);
-			} else {
-				process.stdout.write(`Invalid command: ${command}\n`);
-			}
-			process.stdout.write("Type 'stop' to shutdown the server: ");
-			process.stdin.resume();
-		}
-	});
+	// process.stdin.setEncoding("utf8");
+	// process.stdout.write("Type 'stop' to shutdown the server: ");
+	// process.stdin.on("readable", () => {
+	// 	const dataInput = process.stdin.read();
+	// 	if (dataInput !== null) {
+	// 		const command = dataInput.trim().toLowerCase();
+	// 		if (command === "stop") {
+	// 			process.stdout.write("Shutting down the server\n");
+	// 			process.exit(0);
+	// 		} else {
+	// 			process.stdout.write(`Invalid command: ${command}\n`);
+	// 		}
+	// 		process.stdout.write("Type 'stop' to shutdown the server: ");
+	// 		process.stdin.resume();
+	// 	}
+	// });
 });
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~ GAME SESSION OBJECT ~~~~~~~~~~~~~~~~~~~~~~~ */
