@@ -4,7 +4,7 @@ const moment = require("moment");
 const session = require("express-session");
 const fs = require("fs");
 require("dotenv").config({
-	path: path.resolve(__dirname, ".env"),
+	path: path.resolve(__dirname, "../.env"),
 });
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
@@ -25,8 +25,11 @@ const NameDB = process.env.MONGO_NAMES;
 // console.log(session.connectionString);
 
 app.set("view engine", "ejs");
-app.set("views", path.resolve(__dirname, "templates"));
-app.use(express.static(path.join(__dirname, "static")));
+app.set("views", path.resolve(__dirname, "../templates"));
+app.use(express.static(path.join(__dirname, "../static")));
+
+const serverless = require("serverless-http");
+
 
 if (
 	process.argv.length !== 3 ||
@@ -270,3 +273,6 @@ app.post("/leaderboard", async (req, res) => {
 
 	res.redirect("/leaderboard");
 });
+
+
+module.exports = serverless(app);
