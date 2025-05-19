@@ -10,5 +10,18 @@
 
         <br /><br />
         <h2>Leaderboard</h2>
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+            <% results.forEach((entry, index) => { %>
+            <tr>
+                <td><%- index + 1 %></td>
+                <td><%- entry.name %></td>
+                <td><%- entry.score %></td>
+            </tr>
+            <% }) %>
     </body>
 </html>
