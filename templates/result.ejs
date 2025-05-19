@@ -6,6 +6,10 @@
     </head>
 
     <body>
+        <style>
+            @import url(style.css);
+            @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+        </style>
         <%- include('common/header') %>
 
         <h1>GAME OVER</h1>
@@ -24,7 +28,7 @@
                 <td><%- h.name %></td>
                 <td><%- h.userGuess %></td>
                 <td><%- h.correctAge %></td>
-                <td><%- h.score %></td>
+               <td><%- h.score %></td>
             </tr>
             <% }) %>
         </table>
