@@ -26,7 +26,7 @@ const NameDB = process.env.MONGO_NAMES;
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "templates"));
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(__dirname, "static")));
 
 if (
 	process.argv.length !== 3 ||
@@ -63,7 +63,6 @@ app.listen(portNumber, () => {
 });
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~ GAME SESSION OBJECT ~~~~~~~~~~~~~~~~~~~~~~~ */
-
 class GameSession {
 	#attempts = 0;
 	#totalScore = 0;
@@ -79,29 +78,29 @@ class GameSession {
 			this.#history = session.history;
 			this.#time = session.time;
 			this.#names = session.names;
-		} else {
-			// TODO: grabbing from static text file, CHANGE to grab from mongoDB!!!
-			const validNameFile = path.resolve(
-				__dirname,
-				"static",
-				"valid_names.txt"
-			);
-			const validNames = fs.readFileSync(validNameFile, "utf-8").split(/\r?\n/);
-
-			// grab 5 random non-repeating indices (current list of names is 477)
-			const indices = new Set();
-			while (indices.size < 5) {
-				indices.add(Math.floor(Math.random() * 477));
-			}
-
-			indices.forEach((i) => {
-				this.#names.push(validNames[i]);
-			});
-
-			// console.log(this.#names);
 		}
 	}
+	async initializeNames() {
+		const client = new MongoClient(connectionString, {
+			serverApi: ServerApiVersion.v1,
+		});
+		try {
+			await client.connect();
+			const database = client.db(DBName);
+			const collection = database.collection(NameDB);
+			const result = await collection
+				.aggregate([{ $sample: { size: 5 } }])
+				.toArray();
 
+			result.forEach((i) => {
+				this.#names.push(i.name);
+			});
+		} catch (e) {
+			console.error(e);
+		} finally {
+			await client.close();
+		}
+	}
 	async makeGuess(userGuess) {
 		const resp = await fetch(
 			`https://api.agify.io?name=${this.#names[this.#attempts]}`
@@ -169,9 +168,10 @@ app.get("/", (req, res) => {
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~ PLAY ROUTES ~~~~~~~~~~~~~~~~~~~~~~~ */
 
-app.get("/play", (req, res) => {
+app.get("/play", async (req, res) => {
 	delete req.session.game;
 	req.session.game = new GameSession();
+	req.session.names = await req.session.game.initializeNames();
 	res.redirect("/guess");
 });
 
@@ -206,7 +206,7 @@ app.post("/guess", async (req, res) => {
 
 app.get("/result", (req, res) => {
 	const game = new GameSession(req.session.game);
-	console.log(game.getHistory());
+	// console.log(game.getHistory());
 	if (!req.session.game || game.getHistory().length < 5) {
 		return res.redirect("/");
 	}
@@ -232,7 +232,7 @@ app.get("/leaderboard", async (req, res) => {
 
 		scores = await collection.find({}).sort({ score: -1 }).limit(5).toArray();
 
-		console.log("Top 10 Scores:", scores);
+		// console.log("Top 10 Scores:", scores);
 	} catch (error) {
 		console.error("Error fetching top scores:", error);
 	} finally {
