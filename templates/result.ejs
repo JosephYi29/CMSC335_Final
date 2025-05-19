@@ -14,7 +14,7 @@
 
         <h1>GAME OVER</h1>
         <h2>Your score: <%- score %></h2>
-        <h3>Guess History:</h3>
+        <h3>Game History:</h3>
 
         <table>
             <tr>
@@ -32,7 +32,16 @@
             </tr>
             <% }) %>
         </table>
-    <a href="/play" class="button" id="playAgain">Play Again</a>
 
+        <br /><br /><br />
+
+        <form action="/leaderboard" method="post">
+            username: <input type="text" name="username" min="3" max="50" required autofocus />
+            <input type="submit" value="Save" />
+        </form>
+
+        <br />
+        <hr />
+        <a href="/play">Play Again</a>
     </body>
 </html>
